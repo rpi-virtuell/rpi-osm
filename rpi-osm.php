@@ -4,7 +4,7 @@
  * Plugin URI:        https://github.com/rpi-virtuell/rpi-osm
  * Description:       OSM Maps. Nutzt das Plugin Open User Maps für Locations
  * Author:            Joachim Happel
- * Version:           0.0.2
+ * Version:           0.0.3
  * Domain Path:       /languages
  * Text Domain:       rpi-osm
  * Licence:           GPLv3
@@ -44,6 +44,8 @@ class RPI_OSM{
 
                     $location =  get_post_meta($post->ID , '_oum_location_key', true );
                     $location['title']   = $post->post_title;
+                    $location['iconUrl']= get_post_meta($post->ID , '_oum_location_image', true );
+
                     $locations[]         = $location;
                 }
                 wp_localize_script( 'list', 'Locations', $locations );
