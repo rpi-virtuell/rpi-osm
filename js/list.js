@@ -19,7 +19,7 @@
     } );
     map.addLayer( tileLayer );
 
-
+    var markers = L.markerClusterGroup();
 
     // Show marker for each location.
     Locations.forEach( function( location ) {
@@ -33,10 +33,12 @@
             */
         };
         var center = L.latLng( location.lat, location.lng )
-        var marker = L.marker( center, options ).addTo( map );
+        var marker = L.marker( center, options );
 
         // Show name of the restaurant when click on the icon.
         marker.bindPopup( '<b>' + location.title + '</b><br>' + location.address ).openPopup();
+        markers.addLayer(marker);
     } );
+    map.addLayer(markers);
 
 } )( document, Locations, L );
