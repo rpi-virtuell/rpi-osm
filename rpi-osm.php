@@ -4,7 +4,7 @@
  * Plugin URI:        https://github.com/rpi-virtuell/rpi-osm
  * Description:       OSM Maps. Nutzt das Plugin Open User Maps für Locations
  * Author:            Joachim Happel
- * Version:           0.0.1
+ * Version:           0.0.2
  * Domain Path:       /languages
  * Text Domain:       rpi-osm
  * Licence:           GPLv3
@@ -17,7 +17,12 @@ class RPI_OSM{
         add_action( 'wp_enqueue_scripts', function() {
 
                 wp_enqueue_style( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', [], '1.9.4' );
+
+                wp_enqueue_style( 'leaflet_cluster_default', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css', [], '1.4.1' );
+                wp_enqueue_style( 'leaflet_cluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css', [], '1.4.1' );
+
                 wp_enqueue_script( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', [], '1.9.4', true );
+                wp_enqueue_script( 'leaflet_cluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js', [], '1.4.1', true );
 
                 wp_enqueue_script( 'list', plugins_url( 'js/list.js' , __FILE__), ['jquery', 'leaflet'], '1.0', true );
 
