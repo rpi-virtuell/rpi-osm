@@ -1,7 +1,6 @@
 function render_rpi_map() {
 
     window.Locations = JSON.parse(document.getElementById('locations').innerHTML);
-    console.log(Locations);
 
     // Initialize the map.
     var map = L.map('map').setView([51.319, 9.4949], 7);
@@ -21,6 +20,7 @@ function render_rpi_map() {
 
 }
 
+
 function render_rpi_map_marker() {
     let iconOpt = {
         iconSize: [36, 36],
@@ -30,7 +30,6 @@ function render_rpi_map_marker() {
     }
     var markers = L.markerClusterGroup();
 
-    console.log(Locations);
 
     // Show marker for each location.
     Locations.forEach(function (location) {
