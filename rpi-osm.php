@@ -20,17 +20,30 @@ class RPI_OSM
 
         add_action('wp_enqueue_scripts', function () {
 
-            wp_enqueue_style('leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', [], '1.9.4');
+            wp_enqueue_style('leaflet', plugin_dir_url(__FILE__) . 'js/leaflet/leaflet.css');
+            wp_enqueue_script('leaflet', plugin_dir_url(__FILE__) . 'js/leaflet/leaflet.js', [], false, true);
+//            wp_enqueue_script('leaflet-src-esm', plugin_dir_url(__FILE__) . 'js/leaflet/leaflet-src.esm.js', [], false, true);
+//            wp_enqueue_script('leaflet-src', plugin_dir_url(__FILE__) . 'js/leaflet/leaflet-src.js', [], false, true);
 
-            wp_enqueue_style('leaflet_cluster_default', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css', [], '1.4.1');
-            wp_enqueue_style('leaflet_cluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css', [], '1.4.1');
+            //markercluster
+            wp_enqueue_style('leaflet_markercluster_default', plugin_dir_url(__FILE__) . 'js/leaflet/MarkerCluster.Default.css');
+            wp_enqueue_style('leaflet_markercluster', plugin_dir_url(__FILE__) . 'js/leaflet/MarkerCluster.css');
+
+            wp_enqueue_script('leaflet-src', plugin_dir_url(__FILE__) . 'js/leaflet/leaflet.markercluster.js', [], false, true);
+
 
             wp_enqueue_script('jquery', 'https://code.jquery.com/jquery-3.6.0.min.js', [], '3.6.0');
-            wp_enqueue_script('leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', [], '1.9.4', true);
-            wp_enqueue_script('leaflet_cluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js', [], '1.4.1', true);
+
+
+//
+//            wp_enqueue_style('leaflet_cluster_default', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css');
+//            wp_enqueue_style('leaflet_cluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css');
+//
+//            wp_enqueue_script('leaflet_cluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js', [], false, true);
 
             wp_enqueue_script('list', plugins_url('js/list.js', __FILE__), ['jquery', 'leaflet'], '1.0', true);
 
+//todo used for debugging purposes
 
 //                $locations = [];
 //                $query = new WP_Query( [
@@ -55,15 +68,15 @@ class RPI_OSM
 //                }
 //                wp_localize_script( 'list', 'Locations', $locations );
 
+            //todo end
 
         });
 
         add_action('wp_footer', function () {
             ?>
             <script>
-                document.addEventListener('facetwp-loaded', function (e, o) {
+                document.addEventListener('facetwp-refresh', function (e, o) {
                     setTimeout(function () {
-
                         if (map._loaded) {
                             map.remove();
 
@@ -71,8 +84,18 @@ class RPI_OSM
                         render_rpi_map();
                     }, 0);
 
-
                 });
+
+
+                var querystring = location.search;
+                document.addEventListener('facetwp-loaded', function () {
+                    if (location.search != querystring)
+                        setTimeout(() => {
+                            location.reload();
+                        }, 150);
+                });
+
+
             </script>
             <script>
                 let circle;
@@ -113,13 +136,32 @@ class RPI_OSM
                             circle = L.circle(proxy_location, {
                                 color: 'red',
                                 fillColor: '#f03',
-                                fillOpacity: 0.5,
+                                fillOpacity: 0.3,
                                 radius: radius
                             });
                             circle.addTo(map);
 
+                            var view_zoom = 12;
 
-                            map.setView(proxy_location, 13);
+                            switch (radius) {
+                                case '500':
+                                    view_zoom = 15;
+                                    break;
+                                case '1000':
+                                    view_zoom = 14;
+                                    break;
+                                case '5000':
+                                    view_zoom = 12;
+                                    break;
+                                case '10000':
+                                    view_zoom = 10;
+                                    break;
+                                default:
+                                    break
+
+                            }
+
+                            map.setView(proxy_location, view_zoom);
                         },
                         error: function (error) {
                             console.error('Error:', error);
@@ -140,14 +182,18 @@ class RPI_OSM
         ?>
         <div class="rpi-location-filter">
             <?php
-            echo facetwp_display('facet', 'oum_search');
-            echo facetwp_display('facet', 'agegroup');
-            echo facetwp_display('facet', 'language');
+            echo facetwp_display('facet', 'search');
+            echo facetwp_display('facet', 'age_groups');
+            echo facetwp_display('facet', 'languages');
+            echo facetwp_display('facet', 'continents');
+            echo facetwp_display('facet', 'countries');
+            echo facetwp_display('facet', 'placetypes');
             ?>
         </div>
         <?php
         return ob_get_clean();
     }
 }
+
 
 new RPI_OSM();
